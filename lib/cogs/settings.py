@@ -2,6 +2,7 @@ from discord.ext.commands import Cog
 from discord.ext.commands import command
 from discord.ext import commands
 from datetime import datetime
+from datetime import timedelta
 
 class Settings(Cog):
     def __init__(self, bot):
@@ -71,6 +72,27 @@ class Settings(Cog):
     @command(brief="Notification Test", description="Send a Test Notification Message to yourself.")
     async def test(self, ctx):
         await self.bot.send_notification(ctx, "Notification Test.")
+
+    @command()
+    async def testdate(self, ctx):
+        current_time = datetime.now()
+        await ctx.send(current_time.isoformat())
+
+    @command()
+    async def setreminderfromnow(self, ctx, *args):
+        notif_name = args[0]
+        days = int(args[1])
+        hours = int(args[2])
+        minutes = int(args[3])
+        seconds = int(args[4])
+        notify_time = datetime.now() + timedelta(days,seconds,minutes=minutes,hours=hours)
+        self.bot.scheduler.add_job(self.bot.send_notification, 'date', run_date=notify_time, args=[ctx, f"Reminder for **{notif_name}**!"])
+        await ctx.send(f"You set a reminder for **{notif_name}** for {notify_time.isoformat()}")
+
+    @command()
+    async def alljobs(self, ctx):
+        for job in self.bot.scheduler.get_jobs():
+            await ctx.send(f"id:{job.id}, name:{job.name}, trigger:{job.trigger}, sched_time:{job.next_run_time.isoformat()}")
 
     @Cog.listener()
     async def on_ready(self):

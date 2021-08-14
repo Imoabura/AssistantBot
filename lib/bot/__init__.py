@@ -99,7 +99,6 @@ class Bot(BotBase):
         if not self.ready:
             self.guild = self.get_guild(868354555627331605)
             self.notif_channel = self.get_channel(875185822050189372)
-            #self.scheduler.add_job(self.print_message, CronTrigger(second="0,15,30,45"))
             self.scheduler.start()
 
             await self.notif_channel.send("Now online!")
