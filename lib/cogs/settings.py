@@ -2,7 +2,6 @@ from discord.ext.commands import Cog
 from discord.ext.commands import command
 from discord.ext import commands
 from datetime import datetime
-from datetime import timedelta
 
 class Settings(Cog):
     def __init__(self, bot):
@@ -19,7 +18,7 @@ class Settings(Cog):
             "Set Task deadlines and Reminder times to automatically receive notifications from Assistant Bot!\n  " + 
             "Assistant Bot is a personal, hobby project of Imoabura#4837.```")
 
-    @command(brief="Rename Notif Channel", description="Renames the channel Assistant Bot uses for notifications. (Limit 1 rename per 5 minutes)")
+    @command(brief="Rename Bot Channel", description="Renames the channel Assistant Bot uses for notifications. (Limit 1 rename per 5 minutes)")
     async def renamebotchannel(self, ctx, *, new_channel_name : str):
         current_time = datetime.now()
         
@@ -46,7 +45,7 @@ class Settings(Cog):
         if (isinstance(error, commands.MissingRequiredArgument)):
             await ctx.send("To use the renamebotchannel command do: **!renamebotchannel <new_name>**")
 
-    @command(brief="Set DM Setting", description="Choose 'T' to receive notifications through DMs or 'F' to receive notifications through the notification channel.")
+    @command(brief="Set DMs ON/OFF", description="Choose 'T' to receive notifications through DMs or 'F' to receive notifications through the notification channel.")
     async def dmnotifs(self, ctx, *, activate : str):
         if (activate.upper() == "ON" or activate.upper() == "T" or activate.upper() == "TRUE" or activate == "1"):
             self.bot.use_dms = True
@@ -64,7 +63,7 @@ class Settings(Cog):
         if (isinstance(error, commands.MissingRequiredArgument)):
             await ctx.send("To use the dmnotifs command do: **!dmnotifs <True or False>**")
 
-    @command(brief="Show Settings Breakdown", description="Shows whether User has use_dms turned ON/OFF.")
+    @command(brief="Your Settings", description="Shows whether User has use_dms turned ON/OFF.")
     async def mysettings(self, ctx):
         bool_text = self.bot.on_off_str(self.bot.use_dms)
         await ctx.send(f'You have DM Notifs turned **{bool_text}**')
@@ -72,22 +71,6 @@ class Settings(Cog):
     @command(brief="Notification Test", description="Send a Test Notification Message to yourself.")
     async def test(self, ctx):
         await self.bot.send_notification(ctx, "Notification Test.")
-
-    @command()
-    async def testdate(self, ctx):
-        current_time = datetime.now()
-        await ctx.send(current_time.isoformat())
-
-    @command()
-    async def setreminderfromnow(self, ctx, *args):
-        notif_name = args[0]
-        days = int(args[1])
-        hours = int(args[2])
-        minutes = int(args[3])
-        seconds = int(args[4])
-        notify_time = datetime.now() + timedelta(days,seconds,minutes=minutes,hours=hours)
-        self.bot.scheduler.add_job(self.bot.send_notification, 'date', run_date=notify_time, args=[ctx, f"Reminder for **{notif_name}**!"])
-        await ctx.send(f"You set a reminder for **{notif_name}** for {notify_time.isoformat()}")
 
     @command()
     async def alljobs(self, ctx):
